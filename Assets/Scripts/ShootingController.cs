@@ -6,10 +6,10 @@ public class ShootingController : MonoBehaviour
 {
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform bulletSpawnPoint;
-    [SerializeField] private float bulletSpeed = 10f;
-    
+    //[SerializeField] private float bulletSpeed = 10f;
     [SerializeField] public float attackRange = 5f; // Set the attack range in the Inspector
     [SerializeField] private float shootingCooldown = 0.5f; // Time delay between shots
+    
 
     private Transform enemy;
     private float lastShotTime;
@@ -66,16 +66,15 @@ public class ShootingController : MonoBehaviour
         if (Time.time - lastShotTime >= shootingCooldown)
         {
             lastShotTime = Time.time;
-            Shoot();
+            SpawnBullet();
         }
     }
 
-    void Shoot()
+    void SpawnBullet()
     {
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.velocity = bulletSpawnPoint.up * bulletSpeed;
-        // Customize any additional properties or effects for your bullets
+        BulletController bulletController = bullet.GetComponent<BulletController>();
+        bulletController.InitializeBullet(bulletSpawnPoint.position, bulletSpawnPoint.rotation);
     }
     
     void OnDrawGizmos()

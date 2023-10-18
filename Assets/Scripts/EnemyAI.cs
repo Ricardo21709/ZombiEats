@@ -7,6 +7,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float moveSpeed = 3f;
     private Transform player;
 
+
     void Start()
     {
         // Find the player object by tag (you can use a different method to find the player if necessary)
@@ -20,5 +21,20 @@ public class EnemyAI : MonoBehaviour
 
         // Move the enemy towards the player
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+    }
+    
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            // Check if the collided object is the player
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+
+            if (playerHealth != null)
+            {
+                // Deal damage to the player
+                playerHealth.TakeDamage(1); // You can adjust the damage value
+            }
+        }
     }
 }

@@ -4,15 +4,31 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private GameObject[] enemyPrefabs; // Array of enemy prefabs
+    [SerializeField] private Transform[] spawnPoints; // Array of spawn points
+    [SerializeField] private float spawnInterval = 3f; // Time interval between spawns
+
     void Start()
     {
-        
+        // Start spawning enemies at regular intervals
+        StartCoroutine(SpawnEnemies());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator SpawnEnemies()
     {
-        
+        while (true) // Infinite loop for continuous spawning
+        {
+            // Choose a random enemy prefab from the array
+            GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+
+            // Choose a random spawn point from the array
+            Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+            // Instantiate the chosen enemy at the random spawn point
+            Instantiate(randomEnemyPrefab, randomSpawnPoint.position, Quaternion.identity);
+
+            // Wait for the specified interval before spawning the next enemy
+            yield return new WaitForSeconds(spawnInterval);
+        }
     }
 }
