@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 3; // Set the maximum player health in the Inspector
-    private int currentHealth;
+    [SerializeField] private int currentHealth;
 
     void Start()
     {

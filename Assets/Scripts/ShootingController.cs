@@ -7,67 +7,34 @@ public class ShootingController : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform bulletSpawnPoint;
     //[SerializeField] private float bulletSpeed = 10f;
-    [SerializeField] public float attackRange = 5f; // Set the attack range in the Inspector
     [SerializeField] private float shootingCooldown = 0.5f; // Time delay between shots
     
-
     private Transform enemy;
     private float lastShotTime;
 
     void Update()
     {
-        // Find the closest enemy in the attack range
-        enemy = FindClosestEnemyInAttackRange();
+        RotateTowardsMouse();
         
-        if (enemy != null)
+        // Detect mouse click to shoot
+        if (Input.GetButtonDown("Fire1") && Time.time - lastShotTime >= shootingCooldown)
         {
-            RotateTowardsEnemy();
-            TryShoot();
+            lastShotTime = Time.time;
+            Shoot();
         }
     }
     
-    Transform FindClosestEnemyInAttackRange()
+    void RotateTowardsMouse()
     {
-        // Find all enemy GameObjects in the scene (you can optimize this if needed)
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        Transform closestEnemy = null;
-        float closestDistance = attackRange; // Initialize to the maximum attack range
-
-        // Iterate through all enemy GameObjects
-        foreach (GameObject enemy in enemies)
-        {
-            float distanceToEnemy = Vector2.Distance(transform.position, enemy.transform.position);
-
-            // Check if the enemy is within the attack range and closer than the current closest enemy
-            if (distanceToEnemy <= attackRange && distanceToEnemy < closestDistance)
-            {
-                closestEnemy = enemy.transform;
-                closestDistance = distanceToEnemy;
-            }
-        }
-        return closestEnemy;
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 direction = mousePosition - transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
-    void RotateTowardsEnemy()
+    void Shoot()
     {
-        // If there is a valid enemy, rotate the player towards the enemy
-        if (enemy != null)
-        {
-            Vector2 direction = enemy.position - transform.position;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90;
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        }
-    }
-
-    void TryShoot()
-    {
-        // Implement logic to shoot at the enemy, taking into account the shooting cooldown
-        if (Time.time - lastShotTime >= shootingCooldown)
-        {
-            lastShotTime = Time.time;
-            SpawnBullet();
-        }
+        SpawnBullet();
     }
 
     void SpawnBullet()
@@ -75,11 +42,5 @@ public class ShootingController : MonoBehaviour
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
         BulletController bulletController = bullet.GetComponent<BulletController>();
         bulletController.InitializeBullet(bulletSpawnPoint.position, bulletSpawnPoint.rotation);
-    }
-    
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

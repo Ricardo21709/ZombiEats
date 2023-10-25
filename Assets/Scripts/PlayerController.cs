@@ -5,9 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] public float moveSpeed = 5f;
-    [SerializeField] public float rollSpeed = 5f;
+    [SerializeField] private float sprintSpeed = 10f; // Speed when sprinting
+    [SerializeField] public float slideSpeed = 5f; // Speed when sliding
     private Vector2 moveInput;
-    private bool isRolling = false;
+    private bool isSprinting = false;
+    private bool isSliding = false;
     [SerializeField] private Rigidbody2D rb;
 
     void Start()
@@ -22,8 +24,11 @@ public class PlayerController : MonoBehaviour
         moveInput.y = Input .GetAxisRaw("Vertical");
         moveInput.Normalize();
 
+        // Handle player input for sprinting
+        isSprinting = Input.GetKey(KeyCode.LeftShift); // Assuming Left Shift for sprinting, you can change the key
+        
         // Handle player input for rolling
-        if (Input.GetKeyDown(KeyCode.Space) && !isRolling)
+        if (Input.GetKeyDown(KeyCode.C) && !isSliding)
         {
             StartRolling();
         }
@@ -32,9 +37,10 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         // Apply movement if not rolling
-        if (!isRolling)
+        if (!isSliding)
         {
-            rb.velocity = moveInput * moveSpeed;
+            float currentMoveSpeed = isSprinting ? sprintSpeed : moveSpeed;
+            rb.velocity = moveInput * currentMoveSpeed;
         }
         
         // Rotate the player and their weapon based on the moveInput direction
@@ -47,11 +53,11 @@ public class PlayerController : MonoBehaviour
 
     private void StartRolling()
     {
-        isRolling = true;
+        isSliding = true;
 
         // Apply a force to initiate rolling.
         Vector2 rollDirection = moveInput.normalized;
-        rb.AddForce(rollDirection * (rollSpeed * 0.5f), ForceMode2D.Impulse);
+        rb.AddForce(rollDirection * (slideSpeed * 0.5f), ForceMode2D.Impulse);
 
         // Rolling animation or effects can be added here
 
@@ -62,9 +68,9 @@ public class PlayerController : MonoBehaviour
     IEnumerator StopRolling()
     {
         // Allow rolling for a certain duration (e.g., half a second)
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
 
         // Reset rolling
-        isRolling = false;
+        isSliding = false;
     }
 }
