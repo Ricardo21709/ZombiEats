@@ -8,7 +8,7 @@ public class FarmingArena : MonoBehaviour
     [SerializeField] private float spawnInterval = 1.0f; // Time between zombie spawns
     [SerializeField] private int maxZombies = 10; // Maximum number of zombies in the arena
     private int _currentZombies = 0;
-    private bool _isSpawning = false;
+    private bool _isSpawning;
     [SerializeField] private Color gizmoColor = Color.red; // Color for the Gizmo
     [SerializeField] private float spawnRadius = 5.0f; // The radius within which zombies can spawn
 
@@ -16,7 +16,8 @@ public class FarmingArena : MonoBehaviour
     void Start()
     {
         // Initialize the arena with no zombies
-        _currentZombies = 0;
+        _currentZombies = 0; 
+        _isSpawning = false;
     }
 
     // Update is called once per frame
